@@ -4,164 +4,256 @@
         {
             "userAdded": false,
             "type": "UnityEngine.AnimationClip",
+<<<<<<< Updated upstream
             "ignore": false,
             "defaultInstantiationMode": 0,
             "supportsModification": true
+=======
+            "defaultInstantiationMode": 0
+>>>>>>> Stashed changes
         },
         {
             "userAdded": false,
             "type": "UnityEditor.Animations.AnimatorController",
+<<<<<<< Updated upstream
             "ignore": false,
             "defaultInstantiationMode": 0,
             "supportsModification": true
+=======
+            "defaultInstantiationMode": 0
+>>>>>>> Stashed changes
         },
         {
             "userAdded": false,
             "type": "UnityEngine.AnimatorOverrideController",
+<<<<<<< Updated upstream
             "ignore": false,
             "defaultInstantiationMode": 0,
             "supportsModification": true
+=======
+            "defaultInstantiationMode": 0
+>>>>>>> Stashed changes
         },
         {
             "userAdded": false,
             "type": "UnityEditor.Audio.AudioMixerController",
+<<<<<<< Updated upstream
             "ignore": false,
             "defaultInstantiationMode": 0,
             "supportsModification": true
+=======
+            "defaultInstantiationMode": 0
+>>>>>>> Stashed changes
         },
         {
             "userAdded": false,
             "type": "UnityEngine.ComputeShader",
+<<<<<<< Updated upstream
             "ignore": true,
             "defaultInstantiationMode": 1,
             "supportsModification": true
+=======
+            "defaultInstantiationMode": 1
+>>>>>>> Stashed changes
         },
         {
             "userAdded": false,
             "type": "UnityEngine.Cubemap",
+<<<<<<< Updated upstream
             "ignore": false,
             "defaultInstantiationMode": 0,
             "supportsModification": true
+=======
+            "defaultInstantiationMode": 0
+>>>>>>> Stashed changes
         },
         {
             "userAdded": false,
             "type": "UnityEngine.GameObject",
+<<<<<<< Updated upstream
             "ignore": false,
             "defaultInstantiationMode": 0,
             "supportsModification": true
+=======
+            "defaultInstantiationMode": 0
+>>>>>>> Stashed changes
         },
         {
             "userAdded": false,
             "type": "UnityEditor.LightingDataAsset",
+<<<<<<< Updated upstream
             "ignore": false,
             "defaultInstantiationMode": 0,
             "supportsModification": false
+=======
+            "defaultInstantiationMode": 0
+>>>>>>> Stashed changes
         },
         {
             "userAdded": false,
             "type": "UnityEngine.LightingSettings",
+<<<<<<< Updated upstream
             "ignore": false,
             "defaultInstantiationMode": 0,
             "supportsModification": true
+=======
+            "defaultInstantiationMode": 0
+>>>>>>> Stashed changes
         },
         {
             "userAdded": false,
             "type": "UnityEngine.Material",
+<<<<<<< Updated upstream
             "ignore": false,
             "defaultInstantiationMode": 0,
             "supportsModification": true
+=======
+            "defaultInstantiationMode": 0
+>>>>>>> Stashed changes
         },
         {
             "userAdded": false,
             "type": "UnityEditor.MonoScript",
+<<<<<<< Updated upstream
             "ignore": true,
             "defaultInstantiationMode": 1,
             "supportsModification": true
+=======
+            "defaultInstantiationMode": 1
+>>>>>>> Stashed changes
         },
         {
             "userAdded": false,
             "type": "UnityEngine.PhysicMaterial",
+<<<<<<< Updated upstream
             "ignore": false,
             "defaultInstantiationMode": 0,
             "supportsModification": true
+=======
+            "defaultInstantiationMode": 0
+>>>>>>> Stashed changes
         },
         {
             "userAdded": false,
             "type": "UnityEngine.PhysicsMaterial2D",
+<<<<<<< Updated upstream
             "ignore": false,
             "defaultInstantiationMode": 0,
             "supportsModification": true
+=======
+            "defaultInstantiationMode": 0
+>>>>>>> Stashed changes
         },
         {
             "userAdded": false,
             "type": "UnityEngine.Rendering.PostProcessing.PostProcessProfile",
+<<<<<<< Updated upstream
             "ignore": false,
             "defaultInstantiationMode": 0,
             "supportsModification": true
+=======
+            "defaultInstantiationMode": 0
+>>>>>>> Stashed changes
         },
         {
             "userAdded": false,
             "type": "UnityEngine.Rendering.PostProcessing.PostProcessResources",
+<<<<<<< Updated upstream
             "ignore": false,
             "defaultInstantiationMode": 0,
             "supportsModification": true
+=======
+            "defaultInstantiationMode": 0
+>>>>>>> Stashed changes
         },
         {
             "userAdded": false,
             "type": "UnityEngine.Rendering.VolumeProfile",
+<<<<<<< Updated upstream
             "ignore": false,
             "defaultInstantiationMode": 0,
             "supportsModification": true
+=======
+            "defaultInstantiationMode": 0
+>>>>>>> Stashed changes
         },
         {
             "userAdded": false,
             "type": "UnityEditor.SceneAsset",
+<<<<<<< Updated upstream
             "ignore": false,
             "defaultInstantiationMode": 0,
             "supportsModification": false
+=======
+            "defaultInstantiationMode": 1
+>>>>>>> Stashed changes
         },
         {
             "userAdded": false,
             "type": "UnityEngine.Shader",
+<<<<<<< Updated upstream
             "ignore": true,
             "defaultInstantiationMode": 1,
             "supportsModification": true
+=======
+            "defaultInstantiationMode": 1
+>>>>>>> Stashed changes
         },
         {
             "userAdded": false,
             "type": "UnityEngine.ShaderVariantCollection",
+<<<<<<< Updated upstream
             "ignore": true,
             "defaultInstantiationMode": 1,
             "supportsModification": true
+=======
+            "defaultInstantiationMode": 1
+>>>>>>> Stashed changes
         },
         {
             "userAdded": false,
             "type": "UnityEngine.Texture",
+<<<<<<< Updated upstream
             "ignore": false,
             "defaultInstantiationMode": 0,
             "supportsModification": true
+=======
+            "defaultInstantiationMode": 0
+>>>>>>> Stashed changes
         },
         {
             "userAdded": false,
             "type": "UnityEngine.Texture2D",
+<<<<<<< Updated upstream
             "ignore": false,
             "defaultInstantiationMode": 0,
             "supportsModification": true
+=======
+            "defaultInstantiationMode": 0
+>>>>>>> Stashed changes
         },
         {
             "userAdded": false,
             "type": "UnityEngine.Timeline.TimelineAsset",
+<<<<<<< Updated upstream
             "ignore": false,
             "defaultInstantiationMode": 0,
             "supportsModification": true
+=======
+            "defaultInstantiationMode": 0
+>>>>>>> Stashed changes
         }
     ],
     "defaultDependencyTypeInfo": {
         "userAdded": false,
         "type": "<default_scene_template_dependencies>",
+<<<<<<< Updated upstream
         "ignore": false,
         "defaultInstantiationMode": 1,
         "supportsModification": true
+=======
+        "defaultInstantiationMode": 1
+>>>>>>> Stashed changes
     },
     "newSceneOverride": 0
 }
