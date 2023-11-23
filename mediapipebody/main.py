@@ -1,9 +1,9 @@
 #pipe server
 from body import BodyThread
 import time
+import mediapipe as mp
 import struct
 import global_vars
-import mediapipe as mp
 from sys import exit
 
 
