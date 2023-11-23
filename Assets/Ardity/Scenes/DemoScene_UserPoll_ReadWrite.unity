@@ -136,6 +136,7 @@ GameObject:
   - component: {fileID: 148750001}
   - component: {fileID: 148750000}
   - component: {fileID: 148750004}
+  - component: {fileID: 148750005}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -243,6 +244,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   heartRateText: {fileID: 428046729}
   textToSearchFor: Heart
+  heartRateInt: 0
+--- !u!114 &148750005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 148749998}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93c2f8ef5072a43889ef3d1406114c3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  heartRate: 0
+  heartRateInterval: 0
 --- !u!114 &272482843 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 11442534, guid: a65acf0cbf56b80419f74ebf0bc845f4, type: 3}
@@ -511,7 +527,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 11442534, guid: a65acf0cbf56b80419f74ebf0bc845f4, type: 3}
       propertyPath: portName
-      value: COM5
+      value: /dev/cu.usbmodem2101
       objectReference: {fileID: 0}
     - target: {fileID: 11442534, guid: a65acf0cbf56b80419f74ebf0bc845f4, type: 3}
       propertyPath: messageListener

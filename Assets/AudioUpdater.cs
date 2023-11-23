@@ -6,6 +6,8 @@ public class AudioUpdater : MonoBehaviour
 {
     private MyListener myListener; // Reference to the MyListener script
 
+    public int heartRate;
+    public int heartRateInterval;
     void Start()
     {
         // Find the Cube object and get the MyListener component
@@ -28,8 +30,8 @@ public class AudioUpdater : MonoBehaviour
         if (myListener != null)
         {
             // Get the heart rate value from MyListener
-            int heartRate = myListener.heartRateInt;
-            int heartRateInterval = Mathf.RoundToInt(heartRate / 10.0f) * 10;
+            heartRate = myListener.heartRateInt;
+            heartRateInterval = Mathf.RoundToInt(heartRate / 10.0f) * 10;
 
 
             // Calculate the interval for the switch-case based on heart rate
