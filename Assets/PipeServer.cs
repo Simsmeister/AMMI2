@@ -1,15 +1,10 @@
 using System.Collections;
-
 using System.IO;
-using System.IO.Pipes;
-using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using UnityEngine;
-
-/* Currently very messy because both the server code and hand-drawn code is all in the same file here.
- * But it is still fairly straightforward to use as a reference/base.
- */
 
 public class PipeServer : MonoBehaviour
 {
@@ -25,7 +20,8 @@ public class PipeServer : MonoBehaviour
     public int samplesForPose = 1;
 
     private Body body;
-    private NamedPipeServerStream server;
+    private TcpListener tcpListener;
+    private Thread tcpListenerThread;
 
     const int LANDMARK_COUNT = 33;
     const int LINES_COUNT = 11;
@@ -191,11 +187,65 @@ public class PipeServer : MonoBehaviour
     {
         System.Globalization.CultureInfo.DefaultThreadCurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
 
-        body = new Body(parent,landmarkPrefab,linePrefab,landmarkScale,enableHead?headPrefab:null);
+        body = new Body(parent, landmarkPrefab, linePrefab, landmarkScale, enableHead ? headPrefab : null);
 
-        Thread t = new Thread(new ThreadStart(Run));
-        t.Start();
+        tcpListenerThread = new Thread(new ThreadStart(ListenForClients));
+        tcpListenerThread.Start();
+    }
 
+    private void ListenForClients()
+    {
+        this.tcpListener = new TcpListener(IPAddress.Parse("127.0.0.1"), 13000);
+        this.tcpListener.Start();
+
+        while (true)
+        {
+            TcpClient client = this.tcpListener.AcceptTcpClient();
+            Thread clientThread = new Thread(new ParameterizedThreadStart(HandleClientComm));
+            clientThread.Start(client);
+        }
+    } 
+
+    private void HandleClientComm(object clientObj)
+    {
+        TcpClient tcpClient = (TcpClient)clientObj;
+        NetworkStream clientStream = tcpClient.GetStream();
+
+        using (BinaryReader br = new BinaryReader(clientStream, Encoding.UTF8))
+        {
+            while (true)
+            {
+                try
+                {
+                    Body h = body;
+                    var len = (int)br.ReadUInt32();
+                    var str = new string(br.ReadChars(len));
+                    string[] lines = str.Split('\n');
+
+                    foreach (string l in lines)
+                    {
+                        if (string.IsNullOrWhiteSpace(l))
+                            continue;
+
+                        string[] s = l.Split('|');
+                        if (s.Length < 5) continue;
+
+                        if (anchoredBody && s[0] != "ANCHORED") continue;
+                        if (!anchoredBody && s[0] != "FREE") continue;
+
+                        int i;
+                        if (!int.TryParse(s[1], out i)) continue;
+                        h.positionsBuffer[i].value += new Vector3(float.Parse(s[2]), float.Parse(s[3]), float.Parse(s[4]));
+                        h.positionsBuffer[i].accumulatedValuesCount += 1;
+                        h.active = true;
+                    }
+                }
+                catch (EndOfStreamException)
+                {
+                    break; // When the client disconnects
+                }
+            }
+        }
     }
     private void Update()
     {
@@ -240,58 +290,10 @@ public class PipeServer : MonoBehaviour
         }
     }
 
-    private void Run()
-    {
-        System.Globalization.CultureInfo.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
-
-        // Open the named pipe.
-        server = new NamedPipeServerStream("UnityMediaPipeBody",PipeDirection.InOut, 99, PipeTransmissionMode.Message);
-
-        print("Waiting for connection...");
-        server.WaitForConnection();
-
-        print("Connected.");
-        var br = new BinaryReader(server, Encoding.UTF8);
-
-        while (true)
-        {
-            try
-            {
-                Body h = body;
-                var len = (int)br.ReadUInt32();
-                var str = new string(br.ReadChars(len));
-                string[] lines = str.Split('\n');
-
-                foreach (string l in lines)
-                {
-                    if (string.IsNullOrWhiteSpace(l))
-                        continue;
-
-                    string[] s = l.Split('|');
-                    if (s.Length < 5) continue;
-
-                    if (anchoredBody && s[0] != "ANCHORED") continue;
-                    if (!anchoredBody && s[0] != "FREE") continue;
-
-                    int i;
-                    if (!int.TryParse(s[1], out i)) continue;
-                    h.positionsBuffer[i].value += new Vector3(float.Parse(s[2]), float.Parse(s[3]), float.Parse(s[4]));
-                    h.positionsBuffer[i].accumulatedValuesCount += 1;
-                    h.active = true;
-                }
-            }
-            catch (EndOfStreamException)
-            {
-                break;                    // When client disconnects
-            }
-        }
-
-    }
 
     private void OnDisable()
     {
         print("Client disconnected.");
-        server.Close();
-        server.Dispose();
+        tcpListener.Stop();
     }
 }

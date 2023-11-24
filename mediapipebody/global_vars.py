@@ -2,7 +2,7 @@
 KILL_THREADS = False
 
 # Toggle this in order to view how your WebCam is being interpreted (reduces performance).
-DEBUG = True 
+DEBUG = True
 
 # To switch cameras. Sometimes takes a while.
 WEBCAM_INDEX = 0

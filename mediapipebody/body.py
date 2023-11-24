@@ -1,4 +1,5 @@
 # MediaPipe Body
+import socket
 import mediapipe as mp
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
@@ -87,6 +88,14 @@ class BodyThread(threading.Thread):
         capture = CaptureThread()
         capture.start()
 
+        # Connect to Unity Server
+        self.unity_client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        try:
+            self.unity_client_socket.connect(('127.0.0.1', 13000))
+            print("Connected to Unity")
+        except Exception as ex:
+            print("Failed to connect to Unity:", ex)
+
         with mp_pose.Pose(min_detection_confidence=0.80, min_tracking_confidence=0.5, model_complexity = global_vars.MODEL_COMPLEXITY,static_image_mode = False,enable_segmentation = True) as pose: 
             
             while not global_vars.KILL_THREADS and capture.isRunning==False:
@@ -120,21 +129,10 @@ class BodyThread(threading.Thread):
                                                 mp_drawing.DrawingSpec(color=(255, 100, 0), thickness=2, circle_radius=4),
                                                 mp_drawing.DrawingSpec(color=(255, 255, 255), thickness=2, circle_radius=2),
                                                 )
-                    cv2.imshow('Body Tracking', image)
-                    cv2.waitKey(1)
+                    #cv2.imshow('Body Tracking', image)
+                    #cv2.waitKey(1)
 
-                if self.pipe==None and time.time()-self.timeSinceCheckedConnection>=1:
-                    try:
-                        self.pipe = open(r'\\.\pipe\UnityMediaPipeBody', 'r+b', 0)
-                    except FileNotFoundError:
-                        print("Waiting for Unity project to run...")
-                        self.pipe = None
-                    self.timeSinceCheckedConnection = time.time()
-                    
-                if self.pipe != None:
-                    # Set up data for piping
-                    self.data = ""
-                    i = 0
+                
                     
                     if results.pose_world_landmarks:
                         image_landmarks = results.pose_landmarks
@@ -152,15 +150,31 @@ class BodyThread(threading.Thread):
                             self.data += "ANCHORED|{}|{}|{}|{}\n".format(i,-body_world_landmarks.landmark[i].x,-body_world_landmarks.landmark[i].y,-body_world_landmarks.landmark[i].z)
 
                     
-                    s = self.data.encode('utf-8') 
-                    try:     
-                        self.pipe.write(struct.pack('I', len(s)) + s)   
-                        self.pipe.seek(0)    
-                    except Exception as ex:  
-                        print("Failed to write to pipe. Is the unity project open?")
-                        self.pipe= None
+                if self.unity_client_socket:
+                    self.data = ""
+                    i = 0
+
+                    if results.pose_world_landmarks:
+                        # ... (unchanged)
+
+                        for i in range(0, 33):
+                            self.data += "FREE|{}|{}|{}|{}\n".format(i, body_world_landmarks_world[i][0],
+                                                                    body_world_landmarks_world[i][1],
+                                                                    body_world_landmarks_world[i][2])
+                        for i in range(0, 33):
+                            self.data += "ANCHORED|{}|{}|{}|{}\n".format(i, -body_world_landmarks.landmark[i].x,
+                                                                        -body_world_landmarks.landmark[i].y,
+                                                                        -body_world_landmarks.landmark[i].z)
+
+                    s = self.data.encode('utf-8')
+                    try:
+                        self.unity_client_socket.sendall(struct.pack('I', len(s)) + s)
+                    except Exception as ex:
+                        print("Failed to send data to Unity:", ex)
+                        self.unity_client_socket.close()
+                        self.unity_client_socket = None
+
                         
-                #time.sleep(1/20)
                         
         self.pipe.close()
         capture.cap.release()
