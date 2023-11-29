@@ -10,6 +10,11 @@ import threading
 import time
 import global_vars 
 import struct
+from utils import *
+#from utils import score_table
+import mediapipe as mp
+from types_of_exercise import TypeOfExercise
+#from program import counter
 
 # the capture thread captures images from the WebCam on a separate thread (for performance)
 class CaptureThread(threading.Thread):
@@ -48,6 +53,7 @@ class BodyThread(threading.Thread):
     timeSinceCheckedConnection = 0
     timeSincePostStatistics = 0
 
+
     def compute_real_world_landmarks(self,world_landmarks,image_landmarks,image_shape):
         try:
             # pseudo camera internals
@@ -82,11 +88,27 @@ class BodyThread(threading.Thread):
             return world_landmarks 
 
     def run(self):
+        exercises = {
+        1: "Skipping",
+        2: "sit-up",
+        3: "walk",
+        4: "squat",
+        5: "pull-up",
+        6: "push-up"
+        }
+
+        for number, exercise in exercises.items():
+            print(f"{number}. {exercise}")
+
+        user_input = input("Pick an exercise by typing the corresponding number: ")
+
+        picker = str(exercises[int(user_input)])
         mp_drawing = mp.solutions.drawing_utils
         mp_pose = mp.solutions.pose
         
         capture = CaptureThread()
         capture.start()
+
 
         # Connect to Unity Server
         self.unity_client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -97,7 +119,9 @@ class BodyThread(threading.Thread):
             print("Failed to connect to Unity:", ex)
 
         with mp_pose.Pose(min_detection_confidence=0.80, min_tracking_confidence=0.5, model_complexity = global_vars.MODEL_COMPLEXITY,static_image_mode = False,enable_segmentation = True) as pose: 
-            
+            counter_e = 0  # movement of exercise
+            status = True  # state of move
+
             while not global_vars.KILL_THREADS and capture.isRunning==False:
                 print("Waiting for camera and capture thread.")
                 time.sleep(0.5)
@@ -109,9 +133,13 @@ class BodyThread(threading.Thread):
                 # Fetch stuff from the capture thread
                 ret = capture.ret
                 image = capture.frame
-                                
-                # Image transformations and stuff
-                #image = cv2.flip(image, 1)
+                try:
+                    landmarks = results.pose_landmarks.landmark
+                    counter_e, status = TypeOfExercise(landmarks).calculate_exercise(
+                        picker, counter_e, status)
+                except:
+                    pass
+
                 image.flags.writeable = global_vars.DEBUG
                 
                 # Detections
@@ -149,13 +177,14 @@ class BodyThread(threading.Thread):
                         for i in range(0,33):
                             self.data += "ANCHORED|{}|{}|{}|{}\n".format(i,-body_world_landmarks.landmark[i].x,-body_world_landmarks.landmark[i].y,-body_world_landmarks.landmark[i].z)
 
-                    
+                self.unity_Counter = str(counter_e)  #Send this to unity also
+
                 if self.unity_client_socket:
                     self.data = ""
                     i = 0
 
                     if results.pose_world_landmarks:
-                        # ... (unchanged)
+
 
                         for i in range(0, 33):
                             self.data += "FREE|{}|{}|{}|{}\n".format(i, body_world_landmarks_world[i][0],
@@ -165,8 +194,12 @@ class BodyThread(threading.Thread):
                             self.data += "ANCHORED|{}|{}|{}|{}\n".format(i, -body_world_landmarks.landmark[i].x,
                                                                         -body_world_landmarks.landmark[i].y,
                                                                         -body_world_landmarks.landmark[i].z)
+                            
+                        
+                    self.data += "UNITY_COUNTER|{}\n".format(self.unity_Counter)
 
                     s = self.data.encode('utf-8')
+                    print(s)
                     try:
                         self.unity_client_socket.sendall(struct.pack('I', len(s)) + s)
                     except Exception as ex:
@@ -174,8 +207,11 @@ class BodyThread(threading.Thread):
                         self.unity_client_socket.close()
                         self.unity_client_socket = None
 
+
+
+
                         
                         
-        self.pipe.close()
+        self.unity_client_socket.close()
         capture.cap.release()
         cv2.destroyAllWindows()

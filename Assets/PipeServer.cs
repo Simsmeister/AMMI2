@@ -5,9 +5,11 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using UnityEngine;
+using TMPro;
 
 public class PipeServer : MonoBehaviour
 {
+    public TextMeshProUGUI textMeshProText;
     public Transform parent;
     public GameObject landmarkPrefab;
     public GameObject linePrefab;
@@ -18,6 +20,9 @@ public class PipeServer : MonoBehaviour
     public float landmarkScale = 1f;
     public float maxSpeed = 50f;
     public int samplesForPose = 1;
+    public int Counter;
+
+
 
     private Body body;
     private TcpListener tcpListener;
@@ -182,7 +187,6 @@ public class PipeServer : MonoBehaviour
         }
 
     }
-
     private void Start()
     {
         System.Globalization.CultureInfo.DefaultThreadCurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
@@ -228,7 +232,18 @@ public class PipeServer : MonoBehaviour
                             continue;
 
                         string[] s = l.Split('|');
+
+                        if (s[0] == "UNITY_COUNTER")
+                        {
+                            int unityCounter;
+                            if (int.TryParse(s[1], out unityCounter))
+                            {
+                                Counter = unityCounter;
+                            }
+                        }
                         if (s.Length < 5) continue;
+
+
 
                         if (anchoredBody && s[0] != "ANCHORED") continue;
                         if (!anchoredBody && s[0] != "FREE") continue;
@@ -238,18 +253,28 @@ public class PipeServer : MonoBehaviour
                         h.positionsBuffer[i].value += new Vector3(float.Parse(s[2]), float.Parse(s[3]), float.Parse(s[4]));
                         h.positionsBuffer[i].accumulatedValuesCount += 1;
                         h.active = true;
+
+                        // Check if the received line contains the counter value
+                        
+
+                        
                     }
                 }
                 catch (EndOfStreamException)
                 {
                     break; // When the client disconnects
                 }
+                Debug.Log("Received counter value from Python: " + Counter);
             }
         }
     }
+
+
+
     private void Update()
     {
         UpdateBody(body);
+        textMeshProText.text = "Counter: " + Counter.ToString();
     }
     private void UpdateBody(Body b)
     {
