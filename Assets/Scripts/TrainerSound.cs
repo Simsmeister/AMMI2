@@ -17,7 +17,7 @@ public class TrainerSound : MonoBehaviour
     public PipeServer pipeServer;
 
     public bool playedSeven = false;
-    public bool playedTen = true;
+    public bool playedTen = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -34,7 +34,7 @@ public class TrainerSound : MonoBehaviour
                 trainerAudioSource.PlayOneShot(almostClips[Random.Range(0, 3)]);
                 playedSeven = true;
             }
-        else if (pipeServer.Counter == 10 && !playedTen)
+        if (pipeServer.Counter == 10 && !playedTen)
             {
                 trainerAudioSource.PlayOneShot(completedClips[Random.Range(0, 3)]);
                 playedTen = true;

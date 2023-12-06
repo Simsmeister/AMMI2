@@ -4486,10 +4486,10 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 9916ff424947bc940a1fb44ea5946416, type: 3}
   - {fileID: 8300000, guid: e4e39001aa2bce24fa5fe00b642eef2f, type: 3}
   trainerAudioSource: {fileID: 0}
-  pipeServerObject: {fileID: 0}
+  pipeServerObject: {fileID: 2100381577}
   pipeServer: {fileID: 0}
   playedSeven: 0
-  playedTen: 1
+  playedTen: 0
 --- !u!82 &1790227394
 AudioSource:
   m_ObjectHideFlags: 0
