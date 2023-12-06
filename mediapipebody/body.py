@@ -88,21 +88,21 @@ class BodyThread(threading.Thread):
             return world_landmarks 
 
     def run(self):
-        exercises = {
-        1: "Skipping",
-        2: "sit-up",
-        3: "walk",
-        4: "squat",
-        5: "pull-up",
-        6: "push-up"
-        }
+        # exercises = {
+        # 1: "Skipping",
+        # 2: "sit-up",
+        # 3: "walk",
+        # 4: "squat",
+        # 5: "pull-up",
+        # 6: "push-up"
+        # }
 
-        for number, exercise in exercises.items():
-            print(f"{number}. {exercise}")
+        # for number, exercise in exercises.items():
+        #     print(f"{number}. {exercise}")
 
-        user_input = input("Pick an exercise by typing the corresponding number: ")
+        # user_input = input("Pick an exercise by typing the corresponding number: ")
 
-        picker = str(exercises[int(user_input)])
+        # picker = str(exercises[int(user_input)])
         mp_drawing = mp.solutions.drawing_utils
         mp_pose = mp.solutions.pose
         
@@ -135,9 +135,19 @@ class BodyThread(threading.Thread):
                 image = capture.frame
                 try:
                     landmarks = results.pose_landmarks.landmark
-                    counter_e, status = TypeOfExercise(landmarks).calculate_exercise(
-                        picker, counter_e, status)
                 except:
+                    pass
+
+                try:
+                    data_from_unity = self.unity_client_socket.recv(1024).decode('utf-8')
+                    if data_from_unity:
+                        print("Received data from Unity:", data_from_unity)
+                        counter_e, status = TypeOfExercise(landmarks).calculate_exercise(
+                            data_from_unity, counter_e, status)
+
+
+                except Exception as ex:
+                    print("Error while receiving data from Unity:", ex)
                     pass
 
                 image.flags.writeable = global_vars.DEBUG
@@ -199,7 +209,6 @@ class BodyThread(threading.Thread):
                     self.data += "UNITY_COUNTER|{}\n".format(self.unity_Counter)
 
                     s = self.data.encode('utf-8')
-                    print(s)
                     try:
                         self.unity_client_socket.sendall(struct.pack('I', len(s)) + s)
                     except Exception as ex:
