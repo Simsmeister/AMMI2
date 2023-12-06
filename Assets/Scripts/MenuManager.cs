@@ -22,4 +22,15 @@ public class MenuManager : MonoBehaviour
         SceneManager.LoadScene(sceneName:"ExerciseScene");
         Debug.Log("Click registered");
     }
+
+    public void ActivatePanel(GameObject panel)
+    {
+        panel.SetActive(true);
+    }
+
+    public void DeactivatePanel(GameObject panel)
+    {
+        panel.SetActive(false);
+    }
+
 }
