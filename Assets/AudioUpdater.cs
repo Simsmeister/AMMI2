@@ -1,20 +1,28 @@
 using System.Collections;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using UnityEngine;
 
 public class AudioUpdater : MonoBehaviour
 {
     private MyListener myListener; // Reference to the MyListener script
-
+    private AudioSource audioSource;
+    public AudioClip[] heartBeatMusic;
     public int heartRate;
     public int heartRateInterval;
+    public int currentInterval;
+    public float fadeTime = 2f;
+
+    //private bool sixtyPlaying = false, seventyPlaying = false, eightyPlaying = false, ninetyPlaying = false, hundredtenPlaying = false;
     void Start()
     {
         // Find the Cube object and get the MyListener component
         GameObject cubeObject = GameObject.Find("Cube");
+        GameObject camera = GameObject.Find("Main Camera");
         if (cubeObject != null)
         {
             myListener = cubeObject.GetComponent<MyListener>();
+            audioSource = camera.GetComponent<AudioSource>();
         }
 
         // Check if MyListener component is found
@@ -25,62 +33,67 @@ public class AudioUpdater : MonoBehaviour
     }
 
     void Update()
+{
+    if (myListener != null)
     {
-        // Check if MyListener is not null to avoid errors
-        if (myListener != null)
+        heartRate = myListener.heartRateInt;
+        heartRateInterval = Mathf.RoundToInt(heartRate / 10.0f) * 10;
+
+        // Check if a new interval is reached
+        if (heartRateInterval != currentInterval)
         {
-            // Get the heart rate value from MyListener
-            heartRate = myListener.heartRateInt;
-            heartRateInterval = Mathf.RoundToInt(heartRate / 10.0f) * 10;
+            currentInterval = heartRateInterval;
 
+            // Stop the current audio and initiate the fade-out
+            StartCoroutine(FadeOutAndStop(audioSource, fadeTime));
 
-            // Calculate the interval for the switch-case based on heart rate
-            int interval = (heartRate - 60) / 10;
-
-            // Use a switch-case statement for different intervals
-            switch (heartRateInterval)
-            {
-                case 60:
-                    Debug.Log("Heart rate is between 55 and 64!");
-                    break;
-                case 70:
-                    Debug.Log("Heart rate is between 65 and 74!");
-                    break;
-                case 80:
-                    Debug.Log("Heart rate is between 75 and 84!");
-                    break;
-                case 90:
-                    Debug.Log("Heart rate is between 85 and 94!");
-                    break;
-                case 100:
-                    Debug.Log("Heart rate is between 95 and 104!");
-                    break;
-                case 110:
-                    Debug.Log("Heart rate is between 105 and 114!");
-                    break;
-                case 120:
-                    Debug.Log("Heart rate is between 115 and 124!");
-                    break;
-                case 130:
-                    Debug.Log("Heart rate is between 125 and 134!");
-                    break;
-                case 140:
-                    Debug.Log("Heart rate is between 135 and 144!");
-                    break;
-                case 150:
-                    Debug.Log("Heart rate is between 145 and 154!");
-                    break;
-                    case 160:
-                    Debug.Log("Heart rate is between 155 and 164!");
-                    break;
-                // Add more cases for other intervals
-
-                // You can continue adding cases based on your intervals
-                default:
-                    // Handle cases beyond the specified range
-                    Debug.Log("Heart rate is beyond the specified range!");
-                    break;
-            }
+            // Play the appropriate audio clip and initiate the fade-in
+            PlayAudioForInterval(currentInterval);
         }
     }
+}
+
+void PlayAudioForInterval(int interval)
+{
+    AudioClip clipToPlay = null;
+
+    switch (interval)
+    {
+        case 60:
+            clipToPlay = heartBeatMusic[0];
+            break;
+        case 70:
+            clipToPlay = heartBeatMusic[1];
+            break;
+        case 80:
+            clipToPlay = heartBeatMusic[2];
+            break;
+        case 90:
+            clipToPlay = heartBeatMusic[3];
+            break;
+        // Add other cases as needed
+    }
+
+    if (clipToPlay != null)
+    {
+        audioSource.clip = clipToPlay;
+        StartCoroutine(FadeIn(audioSource, fadeTime));
+    }
+}
+
+IEnumerator FadeOutAndStop(AudioSource audioSource, float fadeTime)
+{
+    if (audioSource.isPlaying)
+    {
+        yield return StartCoroutine(FadeAudioSource.StartFade(audioSource, fadeTime, 0f));
+        audioSource.Stop();
+    }
+}
+
+IEnumerator FadeIn(AudioSource audioSource, float fadeTime)
+{
+    //audioSource.Play();
+    yield return StartCoroutine(FadeAudioSource.StartFade(audioSource, fadeTime, 1f));
+    audioSource.Play();
+}
 }
