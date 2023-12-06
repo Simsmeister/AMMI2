@@ -13,6 +13,10 @@ public class AudioUpdater : MonoBehaviour
     public int currentInterval;
     public float fadeTime = 2f;
 
+    private float lastExecutionTime;
+    public bool hasPlayedOnce = false;
+    public float elapsedTime = 60f;
+
     //private bool sixtyPlaying = false, seventyPlaying = false, eightyPlaying = false, ninetyPlaying = false, hundredtenPlaying = false;
     void Start()
     {
@@ -39,8 +43,11 @@ public class AudioUpdater : MonoBehaviour
         heartRate = myListener.heartRateInt;
         heartRateInterval = Mathf.RoundToInt(heartRate / 10.0f) * 10;
 
+        // Set the time interval for the if statement to run (e.g., once per minute)
+        float timeInterval = 60f; // 60 seconds = 1 minute
+
         // Check if a new interval is reached
-        if (heartRateInterval != currentInterval)
+        if (heartRateInterval != currentInterval && elapsedTime >= timeInterval)
         {
             currentInterval = heartRateInterval;
 
@@ -49,6 +56,8 @@ public class AudioUpdater : MonoBehaviour
 
             // Play the appropriate audio clip and initiate the fade-in
             PlayAudioForInterval(currentInterval);
+            elapsedTime = Time.time - lastExecutionTime;
+            lastExecutionTime = Time.time;
         }
     }
 }
