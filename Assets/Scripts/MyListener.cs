@@ -14,6 +14,8 @@ public class MyListener : MonoBehaviour
 {
     GameObject cubeModifier;
 
+    public GameObject seatbeltObject;
+
     public TMP_Text heartRateText;
     public string textToSearchFor = "Heart";
 
@@ -46,6 +48,15 @@ void OnMessageArrived(string msg)
 
             heartRateInt = int.Parse(msg);
         }
+        if (msg.Contains("chest"))
+        {
+            seatbeltObject.SetActive(true);
+        }
+         if (msg.Contains("begin"))
+        {
+            seatbeltObject.SetActive(false);
+        }
+
 
         // Convert the modified msg to a float
         float speed = float.Parse(msg) * 100;
