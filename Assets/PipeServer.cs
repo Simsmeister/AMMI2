@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.IO;
 using System.Net;
@@ -9,6 +10,7 @@ using TMPro;
 
 public class PipeServer : MonoBehaviour
 {
+    private BinaryWriter bw;
     public TextMeshProUGUI textMeshProText;
     public Transform parent;
     public GameObject landmarkPrefab;
@@ -26,6 +28,7 @@ public class PipeServer : MonoBehaviour
 
     private Body body;
     private TcpListener tcpListener;
+    private TcpClient tcpClient; 
     private Thread tcpListenerThread;
 
     const int LANDMARK_COUNT = 33;
@@ -204,11 +207,12 @@ public class PipeServer : MonoBehaviour
 
         while (true)
         {
-            TcpClient client = this.tcpListener.AcceptTcpClient();
+            tcpClient = this.tcpListener.AcceptTcpClient();
             Thread clientThread = new Thread(new ParameterizedThreadStart(HandleClientComm));
-            clientThread.Start(client);
+            clientThread.Start(tcpClient);
         }
     } 
+
 
     private void HandleClientComm(object clientObj)
     {
@@ -269,6 +273,32 @@ public class PipeServer : MonoBehaviour
         }
     }
 
+    private void SendMessageToClient(TcpClient client, string message)
+    {
+        NetworkStream clientStream = client.GetStream();
+        if (clientStream.CanWrite)
+        {
+            using (BinaryWriter bw = new BinaryWriter(clientStream, Encoding.UTF8, leaveOpen: true))
+            {
+                try
+                {
+                    byte[] dataBytes = Encoding.UTF8.GetBytes(message);
+                    bw.Write((uint)dataBytes.Length);
+                    bw.Write(dataBytes);
+                    Debug.Log($"Message sent to client successfully: {message}");
+                }
+                catch (Exception writeException)
+                {
+                    Debug.Log($"Error while sending message to client: {writeException.Message}");
+                }
+            }
+        }
+        else
+        {
+            Debug.Log("Cannot write to client stream, the connection might be broken.");
+        }
+    }
+
 
 
     private void Update()
@@ -315,10 +345,33 @@ public class PipeServer : MonoBehaviour
         }
     }
 
+    public void OnButton1Click()
+    {
+        //push-up
+        SendMessageToClient(tcpClient, "pushup");
+
+    }
+
+    public void OnButton2Click()
+    {
+       
+        SendMessageToClient(tcpClient, "squat");
+        
+    }
+
+    public void OnButton3Click()
+    {
+
+        SendMessageToClient(tcpClient, "situp");       
+        
+    }
 
     private void OnDisable()
     {
         print("Client disconnected.");
         tcpListener.Stop();
-    }
+    }   
+
+  
 }
+

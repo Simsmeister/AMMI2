@@ -88,27 +88,11 @@ class BodyThread(threading.Thread):
             return world_landmarks 
 
     def run(self):
-        # exercises = {
-        # 1: "Skipping",
-        # 2: "sit-up",
-        # 3: "walk",
-        # 4: "squat",
-        # 5: "pull-up",
-        # 6: "push-up"
-        # }
-
-        # for number, exercise in exercises.items():
-        #     print(f"{number}. {exercise}")
-
-        # user_input = input("Pick an exercise by typing the corresponding number: ")
-
-        # picker = str(exercises[int(user_input)])
-        mp_drawing = mp.solutions.drawing_utils
-        mp_pose = mp.solutions.pose
-        
-        capture = CaptureThread()
-        capture.start()
-
+        exercises = {
+            1: "squat",
+            2: "situp",
+            3: "pushup"
+        }
 
         # Connect to Unity Server
         self.unity_client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -118,6 +102,24 @@ class BodyThread(threading.Thread):
         except Exception as ex:
             print("Failed to connect to Unity:", ex)
 
+
+
+        data_length_bytes = self.unity_client_socket.recv(4)
+        data_length = struct.unpack('!I', data_length_bytes)[0]  # Unpack as unsigned integer
+        data_from_unity = self.unity_client_socket.recv(data_length).decode('utf-8')
+        print("Received data from Unity:", data_from_unity)
+
+        picker = data_from_unity
+
+
+        mp_drawing = mp.solutions.drawing_utils
+        mp_pose = mp.solutions.pose
+        
+        capture = CaptureThread()
+        capture.start()
+
+            
+            
         with mp_pose.Pose(min_detection_confidence=0.80, min_tracking_confidence=0.5, model_complexity = global_vars.MODEL_COMPLEXITY,static_image_mode = False,enable_segmentation = True) as pose: 
             counter_e = 0  # movement of exercise
             status = True  # state of move
@@ -133,22 +135,14 @@ class BodyThread(threading.Thread):
                 # Fetch stuff from the capture thread
                 ret = capture.ret
                 image = capture.frame
+
                 try:
                     landmarks = results.pose_landmarks.landmark
+                    counter_e, status = TypeOfExercise(landmarks).calculate_exercise(
+                        picker, counter_e, status)
                 except:
                     pass
 
-                try:
-                    data_from_unity = self.unity_client_socket.recv(1024).decode('utf-8')
-                    if data_from_unity:
-                        print("Received data from Unity:", data_from_unity)
-                        counter_e, status = TypeOfExercise(landmarks).calculate_exercise(
-                            data_from_unity, counter_e, status)
-
-
-                except Exception as ex:
-                    print("Error while receiving data from Unity:", ex)
-                    pass
 
                 image.flags.writeable = global_vars.DEBUG
                 
@@ -159,7 +153,7 @@ class BodyThread(threading.Thread):
                 # Rendering results
                 if global_vars.DEBUG:
                     if time.time()-self.timeSincePostStatistics>=1:
-                        print("Theoretical Maximum FPS: %f"%(1/(tf-ti)))
+                        #print("Theoretical Maximum FPS: %f"%(1/(tf-ti)))
                         self.timeSincePostStatistics = time.time()
                         
                     if results.pose_landmarks:
@@ -167,8 +161,6 @@ class BodyThread(threading.Thread):
                                                 mp_drawing.DrawingSpec(color=(255, 100, 0), thickness=2, circle_radius=4),
                                                 mp_drawing.DrawingSpec(color=(255, 255, 255), thickness=2, circle_radius=2),
                                                 )
-                    #cv2.imshow('Body Tracking', image)
-                    #cv2.waitKey(1)
 
                 
                     
