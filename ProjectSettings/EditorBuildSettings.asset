@@ -9,6 +9,6 @@ EditorBuildSettings:
     path: Assets/Scenes/Menu.unity
     guid: 2d55f78b4c5c8448eb1c2ca096bb469a
   - enabled: 1
-    path: Assets/Ardity/Scenes/ExerciseScene.unity
+    path: Assets/Scenes/ExerciseScene.unity
     guid: 483dfd9088375b94380a7c4999c98acb
   m_configObjects: {}
