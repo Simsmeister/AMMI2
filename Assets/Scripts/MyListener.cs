@@ -35,6 +35,7 @@ void OnMessageArrived(string msg)
         // Check if the msg contains "Heartrate:"
         if (msg.Contains("Heartrate:"))
         {
+            Debug.Log("Heartrate found");
             // Remove "Heartrate:" from the string
             msg = msg.Replace("Heartrate:", "");
 
