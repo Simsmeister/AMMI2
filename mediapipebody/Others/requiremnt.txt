@@ -1,4 +1,0 @@
-pip install mediapipe
-pip install opencv-python
-pip install panda
-pip install numpy

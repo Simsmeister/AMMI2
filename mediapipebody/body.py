@@ -1,18 +1,13 @@
 # MediaPipe Body
 import socket
 import mediapipe as mp
-from mediapipe.tasks import python
-from mediapipe.tasks.python import vision
 import numpy as np
-
 import cv2
 import threading
 import time
 import global_vars 
 import struct
 from utils import *
-#from utils import score_table
-import mediapipe as mp
 from types_of_exercise import TypeOfExercise
 #from program import counter
 

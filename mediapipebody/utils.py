@@ -1,7 +1,6 @@
 import mediapipe as mp
 import pandas as pd
 import numpy as np
-import cv2
 
 mp_pose = mp.solutions.pose
 

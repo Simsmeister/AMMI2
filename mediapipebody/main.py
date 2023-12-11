@@ -1,8 +1,6 @@
 #pipe server
-import sys
 from body import BodyThread
 import time
-import struct
 import global_vars
 from sys import exit
 import cv2
